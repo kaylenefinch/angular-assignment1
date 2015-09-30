@@ -12,7 +12,6 @@ form {padding-bottom:10px;}
 
   </head>
   <body>
-  <div ng-controller="MainCtrl as main" class="container">
     <nav class="navbar navbar-default navbar-fixed-top">
 <div class="container-fluid">
   <div class="navbar-header">
@@ -21,57 +20,37 @@ form {padding-bottom:10px;}
 </div>
     </nav>
 
-    <!--All by zip code -->
+    <div ng-controller="MainCtrl as main" class="container">
 
-    <form ng-submit="main.searchByZip(main.input.zip)" class="form-inline">
-      <div class="form-group">
-        <label>Search Senator/Representative By Zip Code:</label>
-          <input class="form-control" type="string" ng-model="main.input.zip">
-        </div>
-        <button class="btn btn-info" type="submit">Submit</button>
-      </form>
-<!--Reps by last name-->
-<form ng-submit="main.searchRepsByName(main.input.repsLastName)" class="form-inline">
-  <div class="form-group">
-    <label for="rep-last-name">Search Representative By Last Name:</label>
-    <input id="rep-last-name" class="form-control" type="string" ng-model="main.input.repsLastName" />
-  </div>
+<div class="radio">
+  <label>
+    <input type="radio" ng-model="main.congressType" value="reps"/>
+    Representatives
+  </label>
+</div>
 
-  <button class="btn btn-info" type="submit">Submit</button>
+<div class="radio">
+  <label>
+    <input type="radio" ng-model="main.congressType" value="sens"/>
+    Senators
+  </label>
+</div>
+
+<form class="form-inline">
+  <select class="form-control" ng-model="main.criteria" ng-options="item as item.label for item in main.apis" ng-change="main.input = ''"></select>
+  <input class="form-control" type="text" ng-model="main.input" ng-disabled="main.loading" autofocus/>
+  <button class="btn btn-info" ng-click="main.criteria.method(main.input)" ng-disabled="main.loading || !main.input" type="submit">Submit</button>
 </form>
-<!-- Reps by state -->
-<form ng-submit="main.searchRepsByState(main.input.repsState)" class="form-inline">
 
-  <div class="form-group">
-    <label for="rep-state">Search Representative By State:</label>
-    <input id="rep-state" class="form-control" type="string" ng-model="main.input.repsState" />
-  </div>
-
-  <button class="btn btn-info" type="submit">Submit</button>
-</form>
-<!-- Senator by last name -->
-<form ng-submit="main.searchSensByName(main.input.sensLastName)" class="form-inline">
-
-  <div class="form-group">
-    <label for="rep-last-name">Search Senator By Last Name:</label>
-    <input id="rep-last-name" class="form-control" type="string" ng-model="main.input.sensLastName" />
-  </div>
-
-  <button class="btn btn-info" type="submit">Submit</button>
-</form>
-<!-- Sentor by state -->
-<form ng-submit="main.searchSensByState(main.input.sensState)" class="form-inline">
-
-  <div class="form-group">
-    <label for="rep-last-name">Search Senator By State:</label>
-    <input id="rep-last-name" class="form-control" type="string" ng-model="main.input.sensState" />
-  </div>
-
-  <button class="btn btn-info" type="submit">Submit</button>
-</form>
 
 <ul class="list-group">
-  <li class="list-group-item" ng-repeat="rep in main.reps">
+  <li class="list-group-item" ng-show="main.loading">
+    loading..
+  </li>
+  <li class="list-group-item" ng-show="main.reps.length === 0 && main.SearchOnce && !main.loading">
+    No Results
+  </li>
+  <li ng-hide="main.loading" class="list-group-item" ng-repeat="rep in main.reps">
     <h4 class="list-group-item-heading">{{rep.name}}</h4>
     <p> State: {{rep.state}}</p>
   </li>
